@@ -1,0 +1,11 @@
+{
+    "chatApp": "Chat App",
+    "id": "ID:",
+    "enterChatId": "Enter chat id",
+    "lastSeen": "last seen",
+    "minutesAgo": "minutes ago",
+    "minuteAgo": "minute ago",
+    "startTyping": "Start typing...",
+    "ok": "OK",
+    "editName": "Edit Name"
+}
