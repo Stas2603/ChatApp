@@ -1,5 +1,7 @@
+import 'package:chat_app_test/presentation/features/profile_screen/profile_screen_cubit.dart';
 import 'package:chat_app_test/presentation/features/welcome_screen/welcome_screen_cubit.dart';
 import 'package:chat_app_test/presentation/features/welcome_screen/welcome_screen_view.dart';
+import 'package:chat_app_test/presentation/navigation/route_generator.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -14,8 +16,11 @@ class ChatApp extends StatelessWidget {
       providers: [
         BlocProvider<WelcomeScreenCubit>(
             create: (context) => sl<WelcomeScreenCubit>()),
+        BlocProvider<ProfileScreenCubit>(
+            create: (context) => sl<ProfileScreenCubit>()),
       ],
       child: MaterialApp(
+        onGenerateRoute: RouteGenerator.generateRoute,
         localizationsDelegates: context.localizationDelegates,
         supportedLocales: context.supportedLocales,
         locale: context.locale,
