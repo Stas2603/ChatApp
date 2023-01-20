@@ -64,11 +64,14 @@ class WelcomeScreenCubit extends Cubit<WelcomeScreenState> {
 
   void onChangeName(String name) async {
     final userId = appPreferences.getString('userId');
-
-    DatabaseReference reference =
-        FirebaseDatabase.instance.ref("users/$userId");
-    reference.update({"name": name});
-    await appPreferences.putString('name', name);
-    emit(state.copyWith(name: name));
+    try {
+      DatabaseReference reference =
+          FirebaseDatabase.instance.ref("users/$userId");
+      reference.update({"name": name});
+      await appPreferences.putString('name', name);
+      emit(state.copyWith(name: name));
+    } catch (e) {
+      print(e);
+    }
   }
 }

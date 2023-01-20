@@ -1,6 +1,5 @@
-import 'package:chat_app_test/presentation/features/dialogs/input_dialog.dart';
-import 'package:chat_app_test/presentation/features/welcome_screen/welcome_screen_cubit.dart';
-import 'package:chat_app_test/presentation/features/welcome_screen/welcome_screen_state.dart';
+import 'package:chat_app_test/presentation/features/profile_screen/profile_screen_cubit.dart';
+import 'package:chat_app_test/presentation/features/profile_screen/profile_screen_state.dart';
 import 'package:chat_app_test/presentation/widgets/custom_input_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:easy_localization/easy_localization.dart';
@@ -8,28 +7,26 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../app_resources/locale_keys.g.dart';
 
-class WelcomeScreenView extends StatefulWidget {
-  const WelcomeScreenView({super.key});
+class ProfileScreenView extends StatefulWidget {
+  const ProfileScreenView({
+    Key? key,
+    this.searchUserId = '',
+  }) : super(key: key);
+
+  final String searchUserId;
 
   @override
-  State<WelcomeScreenView> createState() => _WelcomeScreenViewState();
+  State<ProfileScreenView> createState() => _ProfileScreenViewState();
 }
 
-class _WelcomeScreenViewState extends State<WelcomeScreenView> {
+class _ProfileScreenViewState extends State<ProfileScreenView> {
   final textEditingController = TextEditingController();
   final textDialogEditingController = TextEditingController();
 
   @override
   void initState() {
     super.initState();
-    context.read<WelcomeScreenCubit>().initParams();
-  }
-
-  void submit() {
-    context
-        .read<WelcomeScreenCubit>()
-        .onChangeName(textDialogEditingController.text);
-    Navigator.pop(context);
+    context.read<ProfileScreenCubit>().initParams(widget.searchUserId);
   }
 
   @override
@@ -50,17 +47,13 @@ class _WelcomeScreenViewState extends State<WelcomeScreenView> {
               _buildTextWidget(LocaleKeys.chatApp.tr(), 40.0),
               _buildAvatar(),
               _buildUserId(),
-              Row(
-                crossAxisAlignment: CrossAxisAlignment.end,
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [_buildUserName(), _buildEditIcon(context)],
+              InkWell(
+                onTap: () {},
+                child: _buildUserName(),
               ),
               CustomInputWidget(
                 textEditingController: textEditingController,
-                onTap: () {
-                  Navigator.pushNamed(context, '/profile',
-                      arguments: textEditingController.text);
-                },
+                onTap: () {},
               ),
             ],
           ),
@@ -100,9 +93,9 @@ class _WelcomeScreenViewState extends State<WelcomeScreenView> {
   }
 
   Widget _buildUserId() {
-    return BlocBuilder<WelcomeScreenCubit, WelcomeScreenState>(
+    return BlocBuilder<ProfileScreenCubit, ProfileScreenState>(
         builder: (context, state) {
-      final String userName = state.id;
+      final String userName = state.searchUserId;
       return Padding(
         padding: const EdgeInsets.only(top: 70.0),
         child: _buildTextWidget('${LocaleKeys.id.tr()} $userName', 30.0),
@@ -111,26 +104,13 @@ class _WelcomeScreenViewState extends State<WelcomeScreenView> {
   }
 
   Widget _buildUserName() {
-    return BlocBuilder<WelcomeScreenCubit, WelcomeScreenState>(
+    return BlocBuilder<ProfileScreenCubit, ProfileScreenState>(
         builder: (context, state) {
-      final String userName = state.name;
+      final String userName = state.searchUserName;
       return Padding(
         padding: const EdgeInsets.only(top: 30.0),
         child: _buildTextWidget(userName, 30.0),
       );
     });
-  }
-
-  Widget _buildEditIcon(BuildContext context) {
-    return IconButton(
-        icon: const Icon(Icons.edit),
-        onPressed: () {
-          showInputDialog(
-            context,
-            LocaleKeys.editName.tr(),
-            textDialogEditingController,
-            submit,
-          );
-        });
   }
 }
