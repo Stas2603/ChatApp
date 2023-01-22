@@ -1,6 +1,7 @@
 import 'package:chat_app_test/presentation/features/profile_screen/profile_screen_cubit.dart';
 import 'package:chat_app_test/presentation/features/profile_screen/profile_screen_state.dart';
 import 'package:chat_app_test/presentation/widgets/custom_input_widget.dart';
+import 'package:chat_app_test/view_models/userParams.dart';
 import 'package:flutter/material.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -21,7 +22,6 @@ class ProfileScreenView extends StatefulWidget {
 
 class _ProfileScreenViewState extends State<ProfileScreenView> {
   final textEditingController = TextEditingController();
-  final textDialogEditingController = TextEditingController();
 
   @override
   void initState() {
@@ -32,7 +32,6 @@ class _ProfileScreenViewState extends State<ProfileScreenView> {
   @override
   void dispose() {
     textEditingController.dispose();
-    textDialogEditingController.dispose();
 
     super.dispose();
   }
@@ -40,22 +39,46 @@ class _ProfileScreenViewState extends State<ProfileScreenView> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      resizeToAvoidBottomInset: true,
       body: SafeArea(
-        child: Center(
-          child: Column(
-            children: [
-              _buildTextWidget(LocaleKeys.chatApp.tr(), 40.0),
-              _buildAvatar(),
-              _buildUserId(),
-              InkWell(
-                onTap: () {},
-                child: _buildUserName(),
-              ),
-              CustomInputWidget(
-                textEditingController: textEditingController,
-                onTap: () {},
-              ),
-            ],
+        child: SingleChildScrollView(
+          child: Center(
+            child: Column(
+              children: [
+                _buildTextWidget(
+                  LocaleKeys.chatApp.tr(),
+                  40.0,
+                  TextDecoration.none,
+                ),
+                _buildAvatar(),
+                _buildUserId(),
+                BlocBuilder<ProfileScreenCubit, ProfileScreenState>(
+                  builder: (context, state) {
+                    return InkWell(
+                      onTap: () => Navigator.pushNamed(
+                        context,
+                        '/chat',
+                        arguments: UserParams(
+                          id: widget.searchUserId,
+                          date: state.searchUserDate,
+                          name: state.searchUserName,
+                          profession: state.searchUserProfession,
+                        ),
+                      ),
+                      child: _buildUserNameAndProfession(),
+                    );
+                  },
+                ),
+                CustomInputWidget(
+                  textEditingController: textEditingController,
+                  onTap: () {
+                    context
+                        .read<ProfileScreenCubit>()
+                        .initParams(textEditingController.text);
+                  },
+                ),
+              ],
+            ),
           ),
         ),
       ),
@@ -77,7 +100,11 @@ class _ProfileScreenViewState extends State<ProfileScreenView> {
     );
   }
 
-  Widget _buildTextWidget(String text, double fontSize) {
+  Widget _buildTextWidget(
+    String text,
+    double fontSize,
+    TextDecoration decoration,
+  ) {
     return Padding(
       padding: const EdgeInsets.all(8.0),
       child: Text(
@@ -86,7 +113,10 @@ class _ProfileScreenViewState extends State<ProfileScreenView> {
         maxLines: 2,
         text,
         style: GoogleFonts.inter(
-          textStyle: TextStyle(fontSize: fontSize),
+          textStyle: TextStyle(
+            fontSize: fontSize,
+            decoration: decoration,
+          ),
         ),
       ),
     );
@@ -98,18 +128,27 @@ class _ProfileScreenViewState extends State<ProfileScreenView> {
       final String userName = state.searchUserId;
       return Padding(
         padding: const EdgeInsets.only(top: 70.0),
-        child: _buildTextWidget('${LocaleKeys.id.tr()} $userName', 30.0),
+        child: _buildTextWidget(
+          '${LocaleKeys.id.tr()} $userName',
+          30.0,
+          TextDecoration.none,
+        ),
       );
     });
   }
 
-  Widget _buildUserName() {
+  Widget _buildUserNameAndProfession() {
     return BlocBuilder<ProfileScreenCubit, ProfileScreenState>(
         builder: (context, state) {
       final String userName = state.searchUserName;
+      final String userProfession = state.searchUserProfession;
       return Padding(
         padding: const EdgeInsets.only(top: 30.0),
-        child: _buildTextWidget(userName, 30.0),
+        child: _buildTextWidget(
+          '$userName $userProfession',
+          30.0,
+          TextDecoration.underline,
+        ),
       );
     });
   }

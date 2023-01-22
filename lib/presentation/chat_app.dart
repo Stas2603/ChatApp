@@ -1,3 +1,4 @@
+import 'package:chat_app_test/presentation/features/chat_screen/chat_screen_cubit.dart';
 import 'package:chat_app_test/presentation/features/profile_screen/profile_screen_cubit.dart';
 import 'package:chat_app_test/presentation/features/welcome_screen/welcome_screen_cubit.dart';
 import 'package:chat_app_test/presentation/features/welcome_screen/welcome_screen_view.dart';
@@ -18,6 +19,8 @@ class ChatApp extends StatelessWidget {
             create: (context) => sl<WelcomeScreenCubit>()),
         BlocProvider<ProfileScreenCubit>(
             create: (context) => sl<ProfileScreenCubit>()),
+        BlocProvider<ChatScreenCubit>(
+            create: (context) => sl<ChatScreenCubit>()),
       ],
       child: MaterialApp(
         onGenerateRoute: RouteGenerator.generateRoute,

@@ -12,13 +12,38 @@ class ProfileScreenCubit extends Cubit<ProfileScreenState> {
   void searchOtherUser(String? id) async {
     String name = 'No result';
     try {
-      final ref = FirebaseDatabase.instance.ref("users/$id/name");
-      final snapshot = await ref.get();
+      final refName = FirebaseDatabase.instance.ref("users/$id/name");
+      final snapshotName = await refName.get();
 
-      if (snapshot.exists) {
-        name = snapshot.value.toString();
+      if (snapshotName.exists) {
+        name = snapshotName.value.toString();
         emit(
           state.copyWith(searchUserId: id, searchUserName: name),
+        );
+      } else {
+        return;
+      }
+
+      final refDate = FirebaseDatabase.instance.ref("users/$id/date");
+      final snapshotDate = await refDate.get();
+
+      if (snapshotDate.exists) {
+        String date = snapshotDate.value.toString();
+        emit(
+          state.copyWith(searchUserDate: date),
+        );
+      } else {
+        return;
+      }
+
+      final refProfession =
+          FirebaseDatabase.instance.ref("users/$id/profession");
+      final snapshotProfession = await refProfession.get();
+
+      if (snapshotProfession.exists) {
+        String profession = snapshotProfession.value.toString();
+        emit(
+          state.copyWith(searchUserProfession: profession),
         );
       } else {
         return;
