@@ -1,4 +1,5 @@
 import 'package:chat_app_test/data/shared_preferances/app_preferances.dart';
+import 'package:chat_app_test/presentation/features/chat_screen/chat_screen_cubit.dart';
 import 'package:chat_app_test/presentation/features/profile_screen/profile_screen_cubit.dart';
 import 'package:chat_app_test/presentation/features/welcome_screen/welcome_screen_cubit.dart';
 import 'package:get_it/get_it.dart';
@@ -10,6 +11,7 @@ init() async {
 //Bloc
   sl.registerFactory(() => WelcomeScreenCubit(appPreferences: sl()));
   sl.registerFactory(() => ProfileScreenCubit());
+  sl.registerFactory(() => ChatScreenCubit(appPreferences: sl()));
 
 //UseCases
 

@@ -25,10 +25,17 @@ class _WelcomeScreenViewState extends State<WelcomeScreenView> {
     context.read<WelcomeScreenCubit>().initParams();
   }
 
-  void submit() {
+  void submitChangeName() {
     context
         .read<WelcomeScreenCubit>()
         .onChangeName(textDialogEditingController.text);
+    Navigator.pop(context);
+  }
+
+  void submitChangeProfession() {
+    context
+        .read<WelcomeScreenCubit>()
+        .onChangeProfession(textDialogEditingController.text);
     Navigator.pop(context);
   }
 
@@ -43,26 +50,44 @@ class _WelcomeScreenViewState extends State<WelcomeScreenView> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      resizeToAvoidBottomInset: true,
       body: SafeArea(
-        child: Center(
-          child: Column(
-            children: [
-              _buildTextWidget(LocaleKeys.chatApp.tr(), 40.0),
-              _buildAvatar(),
-              _buildUserId(),
-              Row(
-                crossAxisAlignment: CrossAxisAlignment.end,
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [_buildUserName(), _buildEditIcon(context)],
-              ),
-              CustomInputWidget(
-                textEditingController: textEditingController,
-                onTap: () {
-                  Navigator.pushNamed(context, '/profile',
-                      arguments: textEditingController.text);
-                },
-              ),
-            ],
+        child: SingleChildScrollView(
+          child: Center(
+            child: Column(
+              children: [
+                _buildTextWidget(LocaleKeys.chatApp.tr(), 40.0),
+                _buildAvatar(),
+                _buildUserId(),
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.end,
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    _buildUserName(),
+                    _buildEditIcon(context, submitChangeName)
+                  ],
+                ),
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text(
+                      '${LocaleKeys.profession.tr()}:',
+                      style: const TextStyle(fontSize: 30),
+                    ),
+                    _buildUserProfession(),
+                    _buildEditIcon(context, submitChangeProfession)
+                  ],
+                ),
+                CustomInputWidget(
+                  textEditingController: textEditingController,
+                  onTap: () {
+                    Navigator.pushNamed(context, '/profile',
+                        arguments: textEditingController.text);
+                  },
+                ),
+              ],
+            ),
           ),
         ),
       ),
@@ -121,7 +146,15 @@ class _WelcomeScreenViewState extends State<WelcomeScreenView> {
     });
   }
 
-  Widget _buildEditIcon(BuildContext context) {
+  Widget _buildUserProfession() {
+    return BlocBuilder<WelcomeScreenCubit, WelcomeScreenState>(
+        builder: (context, state) {
+      final String userProfession = state.profession;
+      return _buildTextWidget(userProfession, 30.0);
+    });
+  }
+
+  Widget _buildEditIcon(BuildContext context, void Function()? onPressed) {
     return IconButton(
         icon: const Icon(Icons.edit),
         onPressed: () {
@@ -129,7 +162,7 @@ class _WelcomeScreenViewState extends State<WelcomeScreenView> {
             context,
             LocaleKeys.editName.tr(),
             textDialogEditingController,
-            submit,
+            onPressed,
           );
         });
   }
